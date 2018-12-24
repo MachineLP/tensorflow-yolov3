@@ -366,6 +366,7 @@ def preprocess_true_boxes(true_boxes, true_labels, input_shape, anchors, num_cla
     for t, n in enumerate(best_anchor):
         for l in range(num_layers):
             if n not in anchor_mask[l]: continue
+            # 这里也是用到归一化的思想。
             i = np.floor(true_boxes[t,1]/input_shape[::-1]*grid_sizes[l][0]).astype('int32')
             j = np.floor(true_boxes[t,0]/input_shape[::-1]*grid_sizes[l][1]).astype('int32')
             k = anchor_mask[l].index(n)
