@@ -340,13 +340,15 @@ class yolov3(object):
         nb_coord_box = tf.reduce_sum(tf.to_float(coord_mask > 0.0))
         nb_conf_box  = tf.reduce_sum(tf.to_float(conf_mask  > 0.0))
         nb_class_box = tf.reduce_sum(tf.to_float(class_mask > 0.0))
-
+        # coord_mask：只计算为前景的，前景的矩形框才有意义。
         loss_coord = tf.reduce_sum(tf.square(true_box_xy-pred_box_xy)     * coord_mask) / (nb_coord_box + 1e-6) / 2.
         loss_sizes = tf.reduce_sum(tf.square(true_box_wh-pred_box_wh)     * coord_mask) / (nb_coord_box + 1e-6) / 2.
+        # conf_mask：分类前景与背景， 这时候前景与背景都要兼顾到。
         loss_confs = tf.reduce_sum(tf.square(true_box_conf-pred_box_conf) * conf_mask)  / (nb_conf_box  + 1e-6) / 2.
         loss_class = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true[...,5:], logits=pred_box_class)
         # loss_class = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=tf.argmax(y_true[...,5:], axis=-1),
                                                                     # logits=tf.argmax(pred_box_class, axis=-1))
+        # class_mask：只计算为前景的，前景的类别才有意义。
         loss_class = tf.reduce_sum(loss_class * class_mask) / (nb_class_box + 1e-6)
 
         return loss_coord, loss_sizes, loss_confs, loss_class
