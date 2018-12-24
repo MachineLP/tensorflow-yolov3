@@ -323,7 +323,8 @@ class yolov3(object):
         ### adjust w and h => relative size to the containing cell
         true_box_wh_logit = true_box_wh / (anchors * stride)
         pred_box_wh_logit = pred_box_wh / (anchors * stride)
-
+        # 可以参考：https://www.cnblogs.com/lyc-seu/p/8565997.html
+        # tf.where(tensor,a,b)： a,b为和ｔｅｎｓｏｒ相同维度的ｔｅｎｓｏｒ，将ｔｅｎｓｏｒ中的ｔｒｕｅ位置元素替换为ａ中对应位置元素，ｆａｌｓｅ的替换为ｂ中对应位置元素。
         true_box_wh_logit = tf.where(condition=tf.equal(true_box_wh_logit,0),
                                      x=tf.ones_like(true_box_wh_logit), y=true_box_wh_logit)
         pred_box_wh_logit = tf.where(condition=tf.equal(pred_box_wh_logit,0),
